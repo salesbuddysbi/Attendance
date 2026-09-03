@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <title>SBI General Attendance</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <style>
     :root {
-      /* SBI General Theme Colors */
       --primary: #3a1a5b; 
       --secondary: #e40046; 
       --bg-color: #f4f6f9;
@@ -33,7 +33,6 @@
       position: relative; overflow-x: hidden;
     }
 
-    /* Navbar */
     .navbar {
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
       padding: 20px; color: white;
@@ -48,12 +47,10 @@
       cursor: pointer; backdrop-filter: blur(4px); font-weight: 600;
     }
 
-    /* Screens */
     .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
     .screen.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* UI Components */
     .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; }
     .input-group { margin-bottom: 16px; }
     .input-group label { display: block; font-size: 0.85rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600; }
@@ -70,7 +67,6 @@
     .btn-danger { background: var(--danger); color: white; }
     .btn-secondary { background: #e2e8f0; color: var(--text-main); margin-top: 10px; }
 
-    /* Dashboard Typography */
     .greeting { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; color: var(--primary); }
     .sub-greeting { color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px; font-weight: 600;}
     
@@ -78,7 +74,6 @@
     .status-active { background: #c6f6d5; color: #22543d; }
     .status-inactive { background: #fed7d7; color: #822727; }
 
-    /* Stats System */
     .stats-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
     .refresh-btn { background: none; border: none; color: var(--secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .stats-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -87,7 +82,6 @@
     .stat-numbers { font-size: 0.85rem; color: var(--text-light); display: flex; justify-content: space-between; font-weight: 600;}
     .progress-bar { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; margin-top: 12px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 4px; width: 0%; transition: width 1s ease; }
-    
     .loader { text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 20px; font-weight: 600; }
   </style>
 </head>
@@ -99,7 +93,6 @@
     <button class="btn-admin-nav" onclick="navTo('adminPinScreen')">Admin</button>
   </div>
 
-  <!-- Agent Login Screen -->
   <div id="loginScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Agent Access</h2>
@@ -116,7 +109,6 @@
     </div>
   </div>
 
-  <!-- Agent Dashboard Screen -->
   <div id="dashboardScreen" class="screen">
     <div class="greeting" id="greetText">Welcome!</div>
     <div class="sub-greeting" id="subGreetText">Loading dashboard...</div>
@@ -137,7 +129,6 @@
     <button class="btn btn-secondary" style="margin-top: 20px;" onclick="logout()">Log Out</button>
   </div>
 
-  <!-- Admin PIN Screen -->
   <div id="adminPinScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Admin Authentication</h2>
@@ -150,7 +141,6 @@
     </div>
   </div>
 
-  <!-- Admin Dashboard Screen -->
   <div id="adminDashboardScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Initiate Meeting</h2>
@@ -176,6 +166,9 @@
 </div>
 
 <script>
+  // YOUR LIVE WEB APP LINK INTEGRATED HERE
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbygccPTqsQQr6OhkUNzygpQ0L8PGpG8oalKG_HgqtEOwbmgK4cAouOk2AU8ut7iqFK5ZA/exec';
+
   let currentMeeting = null;
   let isCheckedInLive = false;
   let watchId = null;
@@ -186,6 +179,23 @@
     autoRoute();
   };
 
+  // --- API Connection (GitHub -> Google) ---
+  async function callBackend(action, payload, callback) {
+    try {
+      const response = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action, payload: payload })
+      });
+      const data = await response.json();
+      callback(data);
+    } catch (error) {
+      alert("Network Error: Could not connect to the database.");
+      console.error(error);
+    }
+  }
+
+  // --- UI Routing ---
   function navTo(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
@@ -202,10 +212,7 @@
 
   function setGreeting() {
     const hr = new Date().getHours();
-    let greet = 'Good Evening';
-    if(hr < 12) greet = 'Good Morning';
-    else if(hr < 17) greet = 'Good Afternoon';
-    
+    let greet = hr < 12 ? 'Good Morning' : (hr < 17 ? 'Good Afternoon' : 'Good Evening');
     const name = localStorage.getItem('agentName');
     document.getElementById('greetText').innerText = name ? `${greet}, ${name.split(' ')[0]}!` : `${greet}!`;
   }
@@ -216,11 +223,7 @@
     autoRoute();
   }
 
-  function callBackend(action, payload, callback) {
-    google.script.run.withSuccessHandler(callback).processRequest(action, payload);
-  }
-
-  // --- Agent Functions ---
+  // --- Agent Logic ---
   function loginAgent() {
     const imd = document.getElementById('loginIMD').value.trim();
     const name = document.getElementById('loginName').value.trim();
@@ -233,12 +236,12 @@
       if(agent) {
         localStorage.setItem('agentIMD', agent.imd);
         localStorage.setItem('agentName', agent.name);
-        localStorage.setItem('agentManager', agent.manager);
-        localStorage.setItem('agentCluster', agent.cluster);
+        localStorage.setItem('agentManager', agent.manager || 'N/A');
+        localStorage.setItem('agentCluster', agent.cluster || 'N/A');
         setGreeting();
         autoRoute();
       } else {
-        alert("Authentication Failed. Check IMD and Name.");
+        alert("Authentication Failed. Agent not found in database.");
       }
     });
   }
@@ -246,7 +249,6 @@
   function loadAgentDashboard() {
     const imd = localStorage.getItem('agentIMD');
     document.getElementById('subGreetText').innerText = `IMD: ${imd} | ${localStorage.getItem('agentCluster')}`;
-    
     document.getElementById('meetingStatusBadge').innerText = 'Syncing...';
     
     callBackend('getAgentDashboard', {imd: imd}, function(data) {
@@ -290,12 +292,11 @@
   function renderStats(stats) {
     const container = document.getElementById('statsContainer');
     container.innerHTML = ''; 
-
     let hasData = false;
+
     for(const [type, data] of Object.entries(stats)) {
       if(data.scheduled === 0) continue; 
       hasData = true;
-      
       const percent = data.scheduled > 0 ? Math.round((data.attended / data.scheduled) * 100) : 0;
       
       const card = document.createElement('div');
@@ -306,19 +307,15 @@
           <span>Attended: <strong style="color:var(--primary)">${data.attended} / ${data.scheduled}</strong></span>
           <span style="color:var(--secondary)"><strong>${percent}%</strong></span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${percent}%"></div>
-        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div>
       `;
       container.appendChild(card);
     }
     
-    if(!hasData) {
-      container.innerHTML = '<div class="loader">No meeting history found.</div>';
-    }
+    if(!hasData) container.innerHTML = '<div class="loader">No meeting history found.</div>';
   }
 
-  // --- Geolocation & Action ---
+  // --- Geolocation ---
   function getDistanceMeters(lat1, lon1, lat2, lon2) {
     const R = 6371e3; const dLat = (lat2-lat1) * (Math.PI/180); const dLon = (lon2-lon1) * (Math.PI/180);
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2);
@@ -387,7 +384,7 @@
     }, err => console.warn(err), { enableHighAccuracy: true });
   }
 
-  // --- Admin Functions ---
+  // --- Admin Logic ---
   function verifyAdminPin() {
     const pin = document.getElementById('adminPinInput').value;
     callBackend('verifyAdmin', {pin}, function(isValid) {
