@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SBI General Attendance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* SBI General Theme Colors */
+      --primary: #3a1a5b; 
+      --secondary: #e40046; 
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #2d3748;
+      --text-light: #718096;
+      --success: #38a169;
+      --danger: #e53e3e;
+    }
+    
+    body, html {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      margin: 0; padding: 0;
+      color: var(--text-main);
+      display: flex; justify-content: center;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app-container {
+      width: 100%; max-width: 480px;
+      background: var(--bg-color);
+      position: relative; overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 20px; color: white;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+    }
+    .navbar h1 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; }
+    .btn-admin-nav {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+      color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem;
+      cursor: pointer; backdrop-filter: blur(4px); font-weight: 600;
+    }
+
+    /* Screens */
+    .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* UI Components */
+    .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; }
+    .input-group { margin-bottom: 16px; }
+    .input-group label { display: block; font-size: 0.85rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600; }
+    .input-group input, .input-group select {
+      width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 1rem; box-sizing: border-box; transition: 0.2s;
+    }
+    .input-group input:focus { border-color: var(--secondary); outline: none; }
+
+    .btn {
+      width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; box-shadow: 0 4px 15px rgba(228, 0, 70, 0.2); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-secondary { background: #e2e8f0; color: var(--text-main); margin-top: 10px; }
+
+    /* Dashboard Typography */
+    .greeting { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; color: var(--primary); }
+    .sub-greeting { color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px; font-weight: 600;}
+    
+    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; }
+    .status-active { background: #c6f6d5; color: #22543d; }
+    .status-inactive { background: #fed7d7; color: #822727; }
+
+    /* Stats System */
+    .stats-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+    .refresh-btn { background: none; border: none; color: var(--secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    .stats-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .stat-card { background: var(--card-bg); border-radius: 12px; padding: 16px; border: 1px solid #edf2f7; }
+    .stat-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;}
+    .stat-numbers { font-size: 0.85rem; color: var(--text-light); display: flex; justify-content: space-between; font-weight: 600;}
+    .progress-bar { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; margin-top: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 4px; width: 0%; transition: width 1s ease; }
+    
+    .loader { text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 20px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="navbar">
+    <h1>SBI General Portal</h1>
+    <button class="btn-admin-nav" onclick="navTo('adminPinScreen')">Admin</button>
+  </div>
+
+  <!-- Agent Login Screen -->
+  <div id="loginScreen" class="screen">
+    <div class="card" style="margin-top: 20px;">
+      <h2 style="margin-top:0; color: var(--primary);">Agent Access</h2>
+      <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px;">Please enter your credentials to mark attendance.</p>
+      <div class="input-group">
+        <label>IMD Code</label>
+        <input type="text" id="loginIMD" placeholder="e.g. IMD12345">
+      </div>
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="loginName" placeholder="e.g. John Doe">
+      </div>
+      <button class="btn btn-primary" onclick="loginAgent()" id="loginBtn">Log In</button>
+    </div>
+  </div>
+
+  <!-- Agent Dashboard Screen -->
+  <div id="dashboardScreen" class="screen">
+    <div class="greeting" id="greetText">Welcome!</div>
+    <div class="sub-greeting" id="subGreetText">Loading dashboard...</div>
+
+    <div class="card" id="actionCard">
+      <div id="meetingStatusBadge" class="status-badge status-inactive">Checking Schedule...</div>
+      <h3 id="meetingTitle" style="margin: 0 0 15px 0; font-size: 1.1rem; display: none;"></h3>
+      <button id="actionBtn" class="btn btn-primary" style="display: none;" onclick="handleAttendanceAction()">Mark Attendance</button>
+    </div>
+
+    <div class="stats-header">
+      Attendance Record
+      <button class="refresh-btn" onclick="loadAgentDashboard()">↻ Refresh</button>
+    </div>
+    <div id="statsContainer" class="stats-grid">
+      <div class="loader">Fetching records...</div>
+    </div>
+    <button class="btn btn-secondary" style="margin-top: 20px;" onclick="logout()">Log Out</button>
+  </div>
+
+  <!-- Admin PIN Screen -->
+  <div id="adminPinScreen" class="screen">
+    <div class="card" style="margin-top: 20px;">
+      <h2 style="margin-top:0; color: var(--primary);">Admin Authentication</h2>
+      <div class="input-group">
+        <label>Enter Security PIN</label>
+        <input type="password" id="adminPinInput" placeholder="****">
+      </div>
+      <button class="btn btn-primary" onclick="verifyAdminPin()">Validate</button>
+      <button class="btn btn-secondary" onclick="autoRoute()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Screen -->
+  <div id="adminDashboardScreen" class="screen">
+    <div class="card" style="margin-top: 20px;">
+      <h2 style="margin-top:0; color: var(--primary);">Initiate Meeting</h2>
+      <div class="input-group">
+        <label>Date</label>
+        <input type="date" id="meetingDate">
+      </div>
+      <div class="input-group">
+        <label>Type of Meeting</label>
+        <select id="meetingTypeSelect">
+          <option value="Branch Meeting (In Branch)">Branch Meeting (In Branch)</option>
+          <option value="Branch Meeting (Outside Branch)">Branch Meeting (Outside Branch)</option>
+          <option value="Unit Meeting (In Branch)">Unit Meeting (In Branch)</option>
+          <option value="Unit Meeting (Outside Branch)">Unit Meeting (Outside Branch)</option>
+          <option value="Training (In Branch)">Training (In Branch)</option>
+          <option value="Training (Outside Branch)">Training (Outside Branch)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="openMeeting()" id="adminOpenBtn">Open Meeting Now</button>
+      <button class="btn btn-secondary" onclick="autoRoute()">Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentMeeting = null;
+  let isCheckedInLive = false;
+  let watchId = null;
+
+  window.onload = function() {
+    setGreeting();
+    document.getElementById('meetingDate').valueAsDate = new Date();
+    autoRoute();
+  };
+
+  function navTo(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  function autoRoute() {
+    if(localStorage.getItem('agentIMD') && localStorage.getItem('agentName')) {
+      navTo('dashboardScreen');
+      loadAgentDashboard();
+    } else {
+      navTo('loginScreen');
+    }
+  }
+
+  function setGreeting() {
+    const hr = new Date().getHours();
+    let greet = 'Good Evening';
+    if(hr < 12) greet = 'Good Morning';
+    else if(hr < 17) greet = 'Good Afternoon';
+    
+    const name = localStorage.getItem('agentName');
+    document.getElementById('greetText').innerText = name ? `${greet}, ${name.split(' ')[0]}!` : `${greet}!`;
+  }
+
+  function logout() {
+    localStorage.clear();
+    if(watchId) navigator.geolocation.clearWatch(watchId);
+    autoRoute();
+  }
+
+  function callBackend(action, payload, callback) {
+    google.script.run.withSuccessHandler(callback).processRequest(action, payload);
+  }
+
+  // --- Agent Functions ---
+  function loginAgent() {
+    const imd = document.getElementById('loginIMD').value.trim();
+    const name = document.getElementById('loginName').value.trim();
+    if(!imd || !name) return alert("Please enter both IMD Code and Name.");
+
+    document.getElementById('loginBtn').innerText = 'Validating...';
+    
+    callBackend('validateAgent', {imd, name}, function(agent) {
+      document.getElementById('loginBtn').innerText = 'Log In';
+      if(agent) {
+        localStorage.setItem('agentIMD', agent.imd);
+        localStorage.setItem('agentName', agent.name);
+        localStorage.setItem('agentManager', agent.manager);
+        localStorage.setItem('agentCluster', agent.cluster);
+        setGreeting();
+        autoRoute();
+      } else {
+        alert("Authentication Failed. Check IMD and Name.");
+      }
+    });
+  }
+
+  function loadAgentDashboard() {
+    const imd = localStorage.getItem('agentIMD');
+    document.getElementById('subGreetText').innerText = `IMD: ${imd} | ${localStorage.getItem('agentCluster')}`;
+    
+    document.getElementById('meetingStatusBadge').innerText = 'Syncing...';
+    
+    callBackend('getAgentDashboard', {imd: imd}, function(data) {
+      if(data.error) return alert("System Error: " + data.error);
+      isCheckedInLive = data.isCheckedIn;
+      renderActiveMeeting(data.activeMeeting);
+      renderStats(data.stats);
+    });
+  }
+
+  function renderActiveMeeting(meeting) {
+    currentMeeting = meeting;
+    const badge = document.getElementById('meetingStatusBadge');
+    const title = document.getElementById('meetingTitle');
+    const btn = document.getElementById('actionBtn');
+
+    if(!meeting) {
+      badge.className = 'status-badge status-inactive';
+      badge.innerText = 'No Scheduled Meetings';
+      title.style.display = 'none';
+      btn.style.display = 'none';
+      if(watchId) navigator.geolocation.clearWatch(watchId);
+    } else {
+      badge.className = 'status-badge status-active';
+      badge.innerText = 'Session Active';
+      title.style.display = 'block';
+      title.innerText = meeting.type;
+      btn.style.display = 'block';
+
+      if(isCheckedInLive) {
+        btn.innerText = 'Check Out';
+        btn.className = 'btn btn-danger';
+        startGeofenceWatcher();
+      } else {
+        btn.innerText = 'Mark Attendance';
+        btn.className = 'btn btn-primary';
+      }
+    }
+  }
+
+  function renderStats(stats) {
+    const container = document.getElementById('statsContainer');
+    container.innerHTML = ''; 
+
+    let hasData = false;
+    for(const [type, data] of Object.entries(stats)) {
+      if(data.scheduled === 0) continue; 
+      hasData = true;
+      
+      const percent = data.scheduled > 0 ? Math.round((data.attended / data.scheduled) * 100) : 0;
+      
+      const card = document.createElement('div');
+      card.className = 'stat-card';
+      card.innerHTML = `
+        <div class="stat-title">${type}</div>
+        <div class="stat-numbers">
+          <span>Attended: <strong style="color:var(--primary)">${data.attended} / ${data.scheduled}</strong></span>
+          <span style="color:var(--secondary)"><strong>${percent}%</strong></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${percent}%"></div>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+    
+    if(!hasData) {
+      container.innerHTML = '<div class="loader">No meeting history found.</div>';
+    }
+  }
+
+  // --- Geolocation & Action ---
+  function getDistanceMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; const dLat = (lat2-lat1) * (Math.PI/180); const dLon = (lon2-lon1) * (Math.PI/180);
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+  }
+
+  function handleAttendanceAction() {
+    const btn = document.getElementById('actionBtn');
+    
+    if(isCheckedInLive) {
+      btn.innerText = 'Processing...';
+      callBackend('markCheckOut', {imd: localStorage.getItem('agentIMD')}, function(res) {
+        if(res.status === 'success') {
+          alert("Checked Out Successfully!");
+          loadAgentDashboard(); 
+        } else {
+          alert(res.message);
+          loadAgentDashboard();
+        }
+      });
+    } else {
+      btn.innerText = 'Locating...';
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        
+        if (currentMeeting.type.includes('In Branch')) {
+            const dist = getDistanceMeters(lat, lng, currentMeeting.lat, currentMeeting.lng);
+            if(dist > 500) {
+              btn.innerText = 'Mark Attendance';
+              return alert(`Action Blocked: You are ${Math.round(dist)}m away. You must be within 500m of the branch.`);
+            }
+        }
+
+        const payload = {
+          date: currentMeeting.date, type: currentMeeting.type, 
+          imd: localStorage.getItem('agentIMD'), name: localStorage.getItem('agentName'), 
+          manager: localStorage.getItem('agentManager'), cluster: localStorage.getItem('agentCluster'), 
+          location: `${lat},${lng}`
+        };
+
+        callBackend('markCheckIn', payload, function(res) {
+          alert("Check-In Successful!");
+          loadAgentDashboard();
+        });
+      }, err => {
+        btn.innerText = 'Mark Attendance';
+        alert("Location access is mandatory. Please enable GPS.");
+      }, { enableHighAccuracy: true });
+    }
+  }
+
+  function startGeofenceWatcher() {
+    if (!currentMeeting || !currentMeeting.type.includes('In Branch')) return;
+    if(watchId) navigator.geolocation.clearWatch(watchId);
+    
+    watchId = navigator.geolocation.watchPosition(pos => {
+      const dist = getDistanceMeters(pos.coords.latitude, pos.coords.longitude, currentMeeting.lat, currentMeeting.lng);
+      if (dist > 500 && isCheckedInLive) {
+        alert("Geofence Alert: You left the 500m radius. Automatically checking out.");
+        navigator.geolocation.clearWatch(watchId);
+        callBackend('markCheckOut', {imd: localStorage.getItem('agentIMD')}, function() {
+          loadAgentDashboard();
+        });
+      }
+    }, err => console.warn(err), { enableHighAccuracy: true });
+  }
+
+  // --- Admin Functions ---
+  function verifyAdminPin() {
+    const pin = document.getElementById('adminPinInput').value;
+    callBackend('verifyAdmin', {pin}, function(isValid) {
+      if(isValid) {
+        document.getElementById('adminPinInput').value = '';
+        navTo('adminDashboardScreen');
+      } else {
+        alert("Invalid PIN.");
+      }
+    });
+  }
+
+  function openMeeting() {
+    const btn = document.getElementById('adminOpenBtn');
+    btn.innerText = 'Capturing Location...';
+    
+    navigator.geolocation.getCurrentPosition(pos => {
+      const payload = {
+        date: document.getElementById('meetingDate').value,
+        type: document.getElementById('meetingTypeSelect').value,
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+      callBackend('openMeeting', payload, function() {
+        btn.innerText = 'Open Meeting Now';
+        alert("Meeting Opened Successfully!");
+        autoRoute();
+      });
+    }, err => {
+      btn.innerText = 'Open Meeting Now';
+      alert("Error: Admin location is required to set the geofence perimeter.");
+    }, { enableHighAccuracy: true });
+  }
+</script>
+</body>
+</html>
