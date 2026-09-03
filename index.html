@@ -15,6 +15,7 @@
       --text-light: #718096;
       --success: #38a169;
       --danger: #e53e3e;
+      --warning: #dd6b20;
     }
     
     body, html {
@@ -31,23 +32,19 @@
       width: 100%; max-width: 480px;
       background: var(--bg-color);
       position: relative; overflow-x: hidden;
+      padding-bottom: 40px;
     }
 
     .navbar {
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
       padding: 20px; color: white;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: center; align-items: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
     }
-    .navbar h1 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; }
-    .btn-admin-nav {
-      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
-      color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem;
-      cursor: pointer; backdrop-filter: blur(4px); font-weight: 600;
-    }
-
-    .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+    .navbar h1 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; text-align: center;}
+    
+    .screen { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
     .screen.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -63,9 +60,13 @@
       width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
     }
     .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; box-shadow: 0 4px 15px rgba(228, 0, 70, 0.2); }
     .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-success { background: var(--success); color: white; }
     .btn-secondary { background: #e2e8f0; color: var(--text-main); margin-top: 10px; }
+    .admin-link { display: block; text-align: center; margin-top: 30px; font-size: 0.8rem; color: var(--text-light); text-decoration: underline; cursor: pointer;}
 
     .greeting { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; color: var(--primary); }
     .sub-greeting { color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px; font-weight: 600;}
@@ -73,6 +74,7 @@
     .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; }
     .status-active { background: #c6f6d5; color: #22543d; }
     .status-inactive { background: #fed7d7; color: #822727; }
+    .status-completed { background: #bee3f8; color: #2a4365; }
 
     .stats-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
     .refresh-btn { background: none; border: none; color: var(--secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
@@ -82,21 +84,35 @@
     .stat-numbers { font-size: 0.85rem; color: var(--text-light); display: flex; justify-content: space-between; font-weight: 600;}
     .progress-bar { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; margin-top: 12px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 4px; width: 0%; transition: width 1s ease; }
-    .loader { text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 20px; font-weight: 600; }
+    
+    /* Custom Interactive Toast Notification */
+    #toast {
+      visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
+      text-align: center; border-radius: 8px; padding: 16px; position: fixed;
+      z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.2); font-weight: 600; font-size: 0.9rem;
+      opacity: 0; transition: opacity 0.3s, bottom 0.3s;
+    }
+    #toast.show { visibility: visible; bottom: 50px; opacity: 1; }
+    #toast.success { background-color: var(--success); }
+    #toast.error { background-color: var(--danger); }
   </style>
 </head>
 <body>
 
+<!-- Custom Notification Popup -->
+<div id="toast">Message here</div>
+
 <div class="app-container">
   <div class="navbar">
     <h1>SBI General Portal</h1>
-    <button class="btn-admin-nav" onclick="navTo('adminPinScreen')">Admin</button>
   </div>
 
+  <!-- Agent Login -->
   <div id="loginScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Agent Access</h2>
-      <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px;">Please enter your credentials to mark attendance.</p>
+      <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px;">Please enter your credentials to log in.</p>
       <div class="input-group">
         <label>IMD Code</label>
         <input type="text" id="loginIMD" placeholder="e.g. IMD12345">
@@ -107,28 +123,32 @@
       </div>
       <button class="btn btn-primary" onclick="loginAgent()" id="loginBtn">Log In</button>
     </div>
+    <!-- Hidden Admin Link -->
+    <a class="admin-link" onclick="navTo('adminPinScreen')">Admin Area</a>
   </div>
 
+  <!-- Agent Dashboard -->
   <div id="dashboardScreen" class="screen">
     <div class="greeting" id="greetText">Welcome!</div>
     <div class="sub-greeting" id="subGreetText">Loading dashboard...</div>
 
     <div class="card" id="actionCard">
-      <div id="meetingStatusBadge" class="status-badge status-inactive">Checking Schedule...</div>
+      <div id="meetingStatusBadge" class="status-badge status-inactive">Syncing Database...</div>
       <h3 id="meetingTitle" style="margin: 0 0 15px 0; font-size: 1.1rem; display: none;"></h3>
-      <button id="actionBtn" class="btn btn-primary" style="display: none;" onclick="handleAttendanceAction()">Mark Attendance</button>
+      <button id="actionBtn" class="btn btn-primary" style="display: none;" onclick="handleAttendanceAction()"></button>
     </div>
 
     <div class="stats-header">
       Attendance Record
-      <button class="refresh-btn" onclick="loadAgentDashboard()">↻ Refresh</button>
+      <button class="refresh-btn" onclick="loadAgentDashboard()" id="refreshBtn">↻ Refresh</button>
     </div>
     <div id="statsContainer" class="stats-grid">
-      <div class="loader">Fetching records...</div>
+      <!-- Generated by JS -->
     </div>
     <button class="btn btn-secondary" style="margin-top: 20px;" onclick="logout()">Log Out</button>
   </div>
 
+  <!-- Admin PIN -->
   <div id="adminPinScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Admin Authentication</h2>
@@ -136,18 +156,17 @@
         <label>Enter Security PIN</label>
         <input type="password" id="adminPinInput" placeholder="****">
       </div>
-      <button class="btn btn-primary" onclick="verifyAdminPin()">Validate</button>
+      <button class="btn btn-primary" onclick="verifyAdminPin()" id="pinBtn">Validate</button>
       <button class="btn btn-secondary" onclick="autoRoute()">Cancel</button>
     </div>
   </div>
 
+  <!-- Admin Dashboard -->
   <div id="adminDashboardScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
-      <h2 style="margin-top:0; color: var(--primary);">Initiate Meeting</h2>
-      <div class="input-group">
-        <label>Date</label>
-        <input type="date" id="meetingDate">
-      </div>
+      <h2 style="margin-top:0; color: var(--primary);">Manage Meetings</h2>
+      <p style="font-size: 0.8rem; color: var(--text-light);">Meetings auto-close after 15 minutes.</p>
+      
       <div class="input-group">
         <label>Type of Meeting</label>
         <select id="meetingTypeSelect">
@@ -159,27 +178,39 @@
           <option value="Training (Outside Branch)">Training (Outside Branch)</option>
         </select>
       </div>
-      <button class="btn btn-primary" onclick="openMeeting()" id="adminOpenBtn">Open Meeting Now</button>
-      <button class="btn btn-secondary" onclick="autoRoute()">Back to Home</button>
+      
+      <button class="btn btn-primary" onclick="adminAction('Open')" id="btnOpen">Open Meeting</button>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button class="btn btn-danger" onclick="adminAction('Close')" id="btnClose">Close Current</button>
+        <button class="btn btn-warning" onclick="adminAction('Re-Open')" id="btnReOpen">Re-Open Last</button>
+      </div>
+
+      <button class="btn btn-secondary" style="margin-top: 20px;" onclick="autoRoute()">Exit Admin</button>
     </div>
   </div>
 </div>
 
 <script>
-  // YOUR LIVE WEB APP LINK INTEGRATED HERE
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbygccPTqsQQr6OhkUNzygpQ0L8PGpG8oalKG_HgqtEOwbmgK4cAouOk2AU8ut7iqFK5ZA/exec';
+  // YOUR NEW LIVE WEB APP LINK
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwo8nHdwCv7FckiX5aze8VyoFP4ZYqXvbieyvO-Jl6ROw6KF0V233dIhSjVIk4Xm_E/exec';
 
   let currentMeeting = null;
   let isCheckedInLive = false;
-  let watchId = null;
 
   window.onload = function() {
     setGreeting();
-    document.getElementById('meetingDate').valueAsDate = new Date();
     autoRoute();
   };
 
-  // --- API Connection (GitHub -> Google) ---
+  // --- Utility: Custom Toast Notifications ---
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.className = `show ${type}`;
+    setTimeout(() => { toast.className = toast.className.replace(`show ${type}`, ""); }, 3000);
+  }
+
+  // --- API Connection ---
   async function callBackend(action, payload, callback) {
     try {
       const response = await fetch(WEB_APP_URL, {
@@ -190,7 +221,7 @@
       const data = await response.json();
       callback(data);
     } catch (error) {
-      alert("Network Error: Could not connect to the database.");
+      showToast("Network Error. Check connection.", "error");
       console.error(error);
     }
   }
@@ -219,7 +250,6 @@
 
   function logout() {
     localStorage.clear();
-    if(watchId) navigator.geolocation.clearWatch(watchId);
     autoRoute();
   }
 
@@ -227,21 +257,25 @@
   function loginAgent() {
     const imd = document.getElementById('loginIMD').value.trim();
     const name = document.getElementById('loginName').value.trim();
-    if(!imd || !name) return alert("Please enter both IMD Code and Name.");
+    if(!imd || !name) return showToast("Enter IMD Code and Name.", "error");
 
-    document.getElementById('loginBtn').innerText = 'Validating...';
+    const btn = document.getElementById('loginBtn');
+    btn.innerText = 'Validating...';
+    btn.disabled = true;
     
     callBackend('validateAgent', {imd, name}, function(agent) {
-      document.getElementById('loginBtn').innerText = 'Log In';
+      btn.innerText = 'Log In';
+      btn.disabled = false;
       if(agent) {
         localStorage.setItem('agentIMD', agent.imd);
         localStorage.setItem('agentName', agent.name);
         localStorage.setItem('agentManager', agent.manager || 'N/A');
         localStorage.setItem('agentCluster', agent.cluster || 'N/A');
+        showToast("Login Successful!");
         setGreeting();
         autoRoute();
       } else {
-        alert("Authentication Failed. Agent not found in database.");
+        showToast("Invalid Credentials.", "error");
       }
     });
   }
@@ -249,39 +283,49 @@
   function loadAgentDashboard() {
     const imd = localStorage.getItem('agentIMD');
     document.getElementById('subGreetText').innerText = `IMD: ${imd} | ${localStorage.getItem('agentCluster')}`;
-    document.getElementById('meetingStatusBadge').innerText = 'Syncing...';
+    
+    const badge = document.getElementById('meetingStatusBadge');
+    badge.className = 'status-badge status-inactive';
+    badge.innerText = 'Syncing...';
+    document.getElementById('refreshBtn').innerText = '...';
     
     callBackend('getAgentDashboard', {imd: imd}, function(data) {
-      if(data.error) return alert("System Error: " + data.error);
+      document.getElementById('refreshBtn').innerText = '↻ Refresh';
+      if(data.error) return showToast("System Error", "error");
+      
       isCheckedInLive = data.isCheckedIn;
-      renderActiveMeeting(data.activeMeeting);
+      renderActiveMeeting(data.activeMeeting, data.alreadyCompletedToday);
       renderStats(data.stats);
     });
   }
 
-  function renderActiveMeeting(meeting) {
+  function renderActiveMeeting(meeting, alreadyCompleted) {
     currentMeeting = meeting;
     const badge = document.getElementById('meetingStatusBadge');
     const title = document.getElementById('meetingTitle');
     const btn = document.getElementById('actionBtn');
 
-    if(!meeting) {
+    if(!meeting && !isCheckedInLive) {
       badge.className = 'status-badge status-inactive';
-      badge.innerText = 'No Scheduled Meetings';
+      badge.innerText = 'No Active Meetings';
       title.style.display = 'none';
       btn.style.display = 'none';
-      if(watchId) navigator.geolocation.clearWatch(watchId);
+    } else if (alreadyCompleted && !isCheckedInLive) {
+      badge.className = 'status-badge status-completed';
+      badge.innerText = 'Attendance Completed';
+      title.style.display = 'block';
+      title.innerText = meeting.type;
+      btn.style.display = 'none'; // Hide button to prevent multiple check-ins
     } else {
       badge.className = 'status-badge status-active';
       badge.innerText = 'Session Active';
       title.style.display = 'block';
-      title.innerText = meeting.type;
+      title.innerText = meeting ? meeting.type : "Pending Checkout";
       btn.style.display = 'block';
 
       if(isCheckedInLive) {
         btn.innerText = 'Check Out';
         btn.className = 'btn btn-danger';
-        startGeofenceWatcher();
       } else {
         btn.innerText = 'Mark Attendance';
         btn.className = 'btn btn-primary';
@@ -292,11 +336,9 @@
   function renderStats(stats) {
     const container = document.getElementById('statsContainer');
     container.innerHTML = ''; 
-    let hasData = false;
 
+    // Always show all categories, defaulting to 0
     for(const [type, data] of Object.entries(stats)) {
-      if(data.scheduled === 0) continue; 
-      hasData = true;
       const percent = data.scheduled > 0 ? Math.round((data.attended / data.scheduled) * 100) : 0;
       
       const card = document.createElement('div');
@@ -311,112 +353,78 @@
       `;
       container.appendChild(card);
     }
-    
-    if(!hasData) container.innerHTML = '<div class="loader">No meeting history found.</div>';
-  }
-
-  // --- Geolocation ---
-  function getDistanceMeters(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; const dLat = (lat2-lat1) * (Math.PI/180); const dLon = (lon2-lon1) * (Math.PI/180);
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
   function handleAttendanceAction() {
     const btn = document.getElementById('actionBtn');
+    btn.disabled = true;
     
     if(isCheckedInLive) {
       btn.innerText = 'Processing...';
       callBackend('markCheckOut', {imd: localStorage.getItem('agentIMD')}, function(res) {
+        btn.disabled = false;
         if(res.status === 'success') {
-          alert("Checked Out Successfully!");
+          showToast("Checked Out Successfully!");
           loadAgentDashboard(); 
         } else {
-          alert(res.message);
-          loadAgentDashboard();
+          showToast(res.message, "error");
         }
       });
     } else {
-      btn.innerText = 'Locating...';
-      navigator.geolocation.getCurrentPosition(pos => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        
-        if (currentMeeting.type.includes('In Branch')) {
-            const dist = getDistanceMeters(lat, lng, currentMeeting.lat, currentMeeting.lng);
-            if(dist > 500) {
-              btn.innerText = 'Mark Attendance';
-              return alert(`Action Blocked: You are ${Math.round(dist)}m away. You must be within 500m of the branch.`);
-            }
-        }
+      btn.innerText = 'Processing...';
+      const payload = {
+        date: currentMeeting.date, type: currentMeeting.type, 
+        imd: localStorage.getItem('agentIMD'), name: localStorage.getItem('agentName'), 
+        manager: localStorage.getItem('agentManager'), cluster: localStorage.getItem('agentCluster')
+      };
 
-        const payload = {
-          date: currentMeeting.date, type: currentMeeting.type, 
-          imd: localStorage.getItem('agentIMD'), name: localStorage.getItem('agentName'), 
-          manager: localStorage.getItem('agentManager'), cluster: localStorage.getItem('agentCluster'), 
-          location: `${lat},${lng}`
-        };
-
-        callBackend('markCheckIn', payload, function(res) {
-          alert("Check-In Successful!");
-          loadAgentDashboard();
-        });
-      }, err => {
-        btn.innerText = 'Mark Attendance';
-        alert("Location access is mandatory. Please enable GPS.");
-      }, { enableHighAccuracy: true });
+      callBackend('markCheckIn', payload, function(res) {
+        btn.disabled = false;
+        showToast("Check-In Successful!");
+        loadAgentDashboard();
+      });
     }
-  }
-
-  function startGeofenceWatcher() {
-    if (!currentMeeting || !currentMeeting.type.includes('In Branch')) return;
-    if(watchId) navigator.geolocation.clearWatch(watchId);
-    
-    watchId = navigator.geolocation.watchPosition(pos => {
-      const dist = getDistanceMeters(pos.coords.latitude, pos.coords.longitude, currentMeeting.lat, currentMeeting.lng);
-      if (dist > 500 && isCheckedInLive) {
-        alert("Geofence Alert: You left the 500m radius. Automatically checking out.");
-        navigator.geolocation.clearWatch(watchId);
-        callBackend('markCheckOut', {imd: localStorage.getItem('agentIMD')}, function() {
-          loadAgentDashboard();
-        });
-      }
-    }, err => console.warn(err), { enableHighAccuracy: true });
   }
 
   // --- Admin Logic ---
   function verifyAdminPin() {
     const pin = document.getElementById('adminPinInput').value;
+    const btn = document.getElementById('pinBtn');
+    btn.innerText = 'Validating...';
+    
     callBackend('verifyAdmin', {pin}, function(isValid) {
+      btn.innerText = 'Validate';
       if(isValid) {
         document.getElementById('adminPinInput').value = '';
         navTo('adminDashboardScreen');
       } else {
-        alert("Invalid PIN.");
+        showToast("Invalid PIN.", "error");
       }
     });
   }
 
-  function openMeeting() {
-    const btn = document.getElementById('adminOpenBtn');
-    btn.innerText = 'Capturing Location...';
+  function adminAction(actionType) {
+    const payload = {
+      actionType: actionType,
+      type: document.getElementById('meetingTypeSelect').value
+    };
     
-    navigator.geolocation.getCurrentPosition(pos => {
-      const payload = {
-        date: document.getElementById('meetingDate').value,
-        type: document.getElementById('meetingTypeSelect').value,
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      };
-      callBackend('openMeeting', payload, function() {
-        btn.innerText = 'Open Meeting Now';
-        alert("Meeting Opened Successfully!");
-        autoRoute();
-      });
-    }, err => {
-      btn.innerText = 'Open Meeting Now';
-      alert("Error: Admin location is required to set the geofence perimeter.");
-    }, { enableHighAccuracy: true });
+    // Disable buttons temporarily
+    document.getElementById('btnOpen').disabled = true;
+    document.getElementById('btnClose').disabled = true;
+    document.getElementById('btnReOpen').disabled = true;
+
+    callBackend('adminMeetingAction', payload, function(res) {
+      document.getElementById('btnOpen').disabled = false;
+      document.getElementById('btnClose').disabled = false;
+      document.getElementById('btnReOpen').disabled = false;
+      
+      if(res.success) {
+        showToast(res.message);
+      } else {
+        showToast(res.message, "error");
+      }
+    });
   }
 </script>
 </body>
