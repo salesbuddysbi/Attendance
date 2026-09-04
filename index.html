@@ -18,21 +18,49 @@
       --warning: #dd6b20;
     }
     
+    /* Global Reset to fix mobile white spaces */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body, html {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-color);
       margin: 0; padding: 0;
       color: var(--text-main);
-      display: flex; justify-content: center;
-      min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Wrapper for Desktop Centering */
+    .app-wrapper {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Main Container Adaptive Sizing */
     .app-container {
-      width: 100%; max-width: 480px;
+      width: 100%; 
       background: var(--bg-color);
-      position: relative; overflow-x: hidden;
-      padding-bottom: 40px;
+      position: relative; 
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Desktop/Tablet view overrides */
+    @media (min-width: 768px) {
+      .app-wrapper { padding: 40px 20px; align-items: flex-start; }
+      .app-container {
+        max-width: 800px; /* Widened for desktop */
+        min-height: auto;
+        border-radius: 24px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+        overflow: hidden;
+        background: var(--bg-color);
+      }
     }
 
     .navbar {
@@ -41,20 +69,39 @@
       display: flex; justify-content: center; align-items: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+      z-index: 10;
     }
     .navbar h1 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; text-align: center;}
     
-    .screen { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+    .screen { display: none; padding: 20px; animation: fadeIn 0.3s ease; flex-grow: 1; }
     .screen.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; }
+    
+    /* --- NEW: Module Header Style --- */
+    .profile-module {
+      background: var(--card-bg); border-radius: 16px; padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 24px;
+      display: flex; align-items: center; gap: 16px; border: 1px solid #edf2f7;
+    }
+    .profile-avatar {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 700; flex-shrink: 0; box-shadow: 0 4px 10px rgba(228, 0, 70, 0.2);
+    }
+    .profile-details { display: flex; flex-direction: column; gap: 4px; }
+    .greeting { font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--primary); }
+    .sub-greeting { color: var(--text-light); font-size: 0.85rem; margin: 0; font-weight: 600; line-height: 1.4;}
+    .badge-pill { background: #edf2f7; color: var(--text-main); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; display: inline-block; margin-top: 4px; width: fit-content; }
+
     .input-group { margin-bottom: 16px; }
     .input-group label { display: block; font-size: 0.85rem; color: var(--text-light); margin-bottom: 6px; font-weight: 600; }
     .input-group input, .input-group select {
-      width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 1rem; box-sizing: border-box; transition: 0.2s;
+      width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 1rem; transition: 0.2s; background: #fff;
     }
-    .input-group input:focus { border-color: var(--secondary); outline: none; }
+    .input-group input:focus, .input-group select:focus { border-color: var(--secondary); outline: none; }
 
     .btn {
       width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
@@ -66,20 +113,21 @@
     .btn-warning { background: var(--warning); color: white; }
     .btn-success { background: var(--success); color: white; }
     .btn-secondary { background: #e2e8f0; color: var(--text-main); margin-top: 10px; }
+    
     .admin-link { display: block; text-align: center; margin-top: 30px; font-size: 0.8rem; color: var(--text-light); text-decoration: underline; cursor: pointer;}
 
-    .greeting { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; color: var(--primary); }
-    .sub-greeting { color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px; font-weight: 600;}
-    
     .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; }
     .status-active { background: #c6f6d5; color: #22543d; }
     .status-inactive { background: #fed7d7; color: #822727; }
     .status-completed { background: #bee3f8; color: #2a4365; }
 
-    .stats-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
-    .refresh-btn { background: none; border: none; color: var(--secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
-    .stats-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .stat-card { background: var(--card-bg); border-radius: 12px; padding: 16px; border: 1px solid #edf2f7; }
+    .stats-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; margin-top: 10px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+    .refresh-btn { background: #edf2f7; border: none; color: var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;}
+    .refresh-btn:hover { background: #e2e8f0; }
+    
+    /* --- NEW: Responsive Stats Grid --- */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .stat-card { background: var(--card-bg); border-radius: 12px; padding: 16px; border: 1px solid #edf2f7; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
     .stat-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;}
     .stat-numbers { font-size: 0.85rem; color: var(--text-light); display: flex; justify-content: space-between; font-weight: 600;}
     .progress-bar { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; margin-top: 12px; overflow: hidden; }
@@ -103,89 +151,102 @@
 <!-- Custom Notification Popup -->
 <div id="toast">Message here</div>
 
-<div class="app-container">
-  <div class="navbar">
-    <h1>SBI General Portal</h1>
-  </div>
+<div class="app-wrapper">
+  <div class="app-container">
+    <div class="navbar">
+      <h1>SBI General Portal</h1>
+    </div>
 
-  <!-- Agent Login -->
-  <div id="loginScreen" class="screen">
-    <div class="card" style="margin-top: 20px;">
-      <h2 style="margin-top:0; color: var(--primary);">Agent Access</h2>
-      <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px;">Please enter your credentials to log in.</p>
-      <div class="input-group">
-        <label>IMD Code</label>
-        <input type="text" id="loginIMD" placeholder="e.g. IMD12345">
+    <!-- Agent Login -->
+    <div id="loginScreen" class="screen">
+      <div class="card" style="margin-top: 20px;">
+        <h2 style="margin-top:0; color: var(--primary);">Agent Access</h2>
+        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px;">Please enter your credentials to log in.</p>
+        <div class="input-group">
+          <label>IMD Code</label>
+          <input type="text" id="loginIMD" placeholder="e.g. IMD12345">
+        </div>
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="loginName" placeholder="e.g. John Doe">
+        </div>
+        <button class="btn btn-primary" onclick="loginAgent()" id="loginBtn">Log In</button>
       </div>
-      <div class="input-group">
-        <label>Full Name</label>
-        <input type="text" id="loginName" placeholder="e.g. John Doe">
-      </div>
-      <button class="btn btn-primary" onclick="loginAgent()" id="loginBtn">Log In</button>
-    </div>
-    <!-- Hidden Admin Link -->
-    <a class="admin-link" onclick="navTo('adminPinScreen')">Admin Area</a>
-  </div>
-
-  <!-- Agent Dashboard -->
-  <div id="dashboardScreen" class="screen">
-    <div class="greeting" id="greetText">Welcome!</div>
-    <div class="sub-greeting" id="subGreetText">Loading dashboard...</div>
-
-    <div class="card" id="actionCard">
-      <div id="meetingStatusBadge" class="status-badge status-inactive">Syncing Database...</div>
-      <h3 id="meetingTitle" style="margin: 0 0 15px 0; font-size: 1.1rem; display: none;"></h3>
-      <button id="actionBtn" class="btn btn-primary" style="display: none;" onclick="handleAttendanceAction()"></button>
+      <!-- Hidden Admin Link -->
+      <a class="admin-link" onclick="navTo('adminPinScreen')">Admin Area</a>
     </div>
 
-    <div class="stats-header">
-      Attendance Record
-      <button class="refresh-btn" onclick="loadAgentDashboard()" id="refreshBtn">↻ Refresh</button>
-    </div>
-    <div id="statsContainer" class="stats-grid">
-      <!-- Generated by JS -->
-    </div>
-    <button class="btn btn-secondary" style="margin-top: 20px;" onclick="logout()">Log Out</button>
-  </div>
-
-  <!-- Admin PIN -->
-  <div id="adminPinScreen" class="screen">
-    <div class="card" style="margin-top: 20px;">
-      <h2 style="margin-top:0; color: var(--primary);">Admin Authentication</h2>
-      <div class="input-group">
-        <label>Enter Security PIN</label>
-        <input type="password" id="adminPinInput" placeholder="****">
-      </div>
-      <button class="btn btn-primary" onclick="verifyAdminPin()" id="pinBtn">Validate</button>
-      <button class="btn btn-secondary" onclick="autoRoute()">Cancel</button>
-    </div>
-  </div>
-
-  <!-- Admin Dashboard -->
-  <div id="adminDashboardScreen" class="screen">
-    <div class="card" style="margin-top: 20px;">
-      <h2 style="margin-top:0; color: var(--primary);">Manage Meetings</h2>
-      <p style="font-size: 0.8rem; color: var(--text-light);">Meetings auto-close after 15 minutes.</p>
+    <!-- Agent Dashboard -->
+    <div id="dashboardScreen" class="screen">
       
-      <div class="input-group">
-        <label>Type of Meeting</label>
-        <select id="meetingTypeSelect">
-          <option value="Branch Meeting (In Branch)">Branch Meeting (In Branch)</option>
-          <option value="Branch Meeting (Outside Branch)">Branch Meeting (Outside Branch)</option>
-          <option value="Unit Meeting (In Branch)">Unit Meeting (In Branch)</option>
-          <option value="Unit Meeting (Outside Branch)">Unit Meeting (Outside Branch)</option>
-          <option value="Training (In Branch)">Training (In Branch)</option>
-          <option value="Training (Outside Branch)">Training (Outside Branch)</option>
-        </select>
+      <!-- NEW: Module-Style Header -->
+      <div class="profile-module">
+        <div class="profile-avatar" id="profileAvatar">A</div>
+        <div class="profile-details">
+          <h2 class="greeting" id="greetText">Welcome!</h2>
+          <div class="sub-greeting">
+            <span id="subGreetName">Loading...</span>
+            <span class="badge-pill" id="subGreetIMD">IMD: --</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="actionCard">
+        <div id="meetingStatusBadge" class="status-badge status-inactive">Syncing Database...</div>
+        <h3 id="meetingTitle" style="margin: 0 0 15px 0; font-size: 1.1rem; display: none;"></h3>
+        <button id="actionBtn" class="btn btn-primary" style="display: none;" onclick="handleAttendanceAction()"></button>
+      </div>
+
+      <div class="stats-header">
+        Attendance Record
+        <button class="refresh-btn" onclick="loadAgentDashboard()" id="refreshBtn">↻ Refresh</button>
       </div>
       
-      <button class="btn btn-primary" onclick="adminAction('Open')" id="btnOpen">Open Meeting</button>
-      <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button class="btn btn-danger" onclick="adminAction('Close')" id="btnClose">Close Current</button>
-        <button class="btn btn-warning" onclick="adminAction('Re-Open')" id="btnReOpen">Re-Open Last</button>
+      <div id="statsContainer" class="stats-grid">
+        <!-- Generated by JS -->
       </div>
+      <button class="btn btn-secondary" style="margin-top: 24px;" onclick="logout()">Log Out</button>
+    </div>
 
-      <button class="btn btn-secondary" style="margin-top: 20px;" onclick="autoRoute()">Exit Admin</button>
+    <!-- Admin PIN -->
+    <div id="adminPinScreen" class="screen">
+      <div class="card" style="margin-top: 20px;">
+        <h2 style="margin-top:0; color: var(--primary);">Admin Authentication</h2>
+        <div class="input-group">
+          <label>Enter Security PIN</label>
+          <input type="password" id="adminPinInput" placeholder="****">
+        </div>
+        <button class="btn btn-primary" onclick="verifyAdminPin()" id="pinBtn">Validate</button>
+        <button class="btn btn-secondary" onclick="autoRoute()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboardScreen" class="screen">
+      <div class="card" style="margin-top: 20px;">
+        <h2 style="margin-top:0; color: var(--primary);">Manage Meetings</h2>
+        <p style="font-size: 0.8rem; color: var(--text-light);">Meetings auto-close after 15 minutes.</p>
+        
+        <div class="input-group">
+          <label>Type of Meeting</label>
+          <select id="meetingTypeSelect">
+            <option value="Branch Meeting (In Branch)">Branch Meeting (In Branch)</option>
+            <option value="Branch Meeting (Outside Branch)">Branch Meeting (Outside Branch)</option>
+            <option value="Unit Meeting (In Branch)">Unit Meeting (In Branch)</option>
+            <option value="Unit Meeting (Outside Branch)">Unit Meeting (Outside Branch)</option>
+            <option value="Training (In Branch)">Training (In Branch)</option>
+            <option value="Training (Outside Branch)">Training (Outside Branch)</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" onclick="adminAction('Open')" id="btnOpen">Open Meeting</button>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-danger" onclick="adminAction('Close')" id="btnClose">Close Current</button>
+          <button class="btn btn-warning" onclick="adminAction('Re-Open')" id="btnReOpen">Re-Open Last</button>
+        </div>
+
+        <button class="btn btn-secondary" style="margin-top: 20px;" onclick="autoRoute()">Exit Admin</button>
+      </div>
     </div>
   </div>
 </div>
@@ -198,9 +259,14 @@
   let isCheckedInLive = false;
 
   window.onload = function() {
-    setGreeting();
     autoRoute();
   };
+
+  // --- Utility: Get Initials for Avatar ---
+  function getInitials(name) {
+    if (!name) return 'S';
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  }
 
   // --- Utility: Custom Toast Notifications ---
   function showToast(message, type = 'success') {
@@ -235,17 +301,24 @@
   function autoRoute() {
     if(localStorage.getItem('agentIMD') && localStorage.getItem('agentName')) {
       navTo('dashboardScreen');
+      setupProfileHeader();
       loadAgentDashboard();
     } else {
       navTo('loginScreen');
     }
   }
 
-  function setGreeting() {
+  function setupProfileHeader() {
     const hr = new Date().getHours();
     let greet = hr < 12 ? 'Good Morning' : (hr < 17 ? 'Good Afternoon' : 'Good Evening');
     const name = localStorage.getItem('agentName');
-    document.getElementById('greetText').innerText = name ? `${greet}, ${name.split(' ')[0]}!` : `${greet}!`;
+    const imd = localStorage.getItem('agentIMD');
+    const cluster = localStorage.getItem('agentCluster') || 'N/A';
+    
+    document.getElementById('greetText').innerText = greet;
+    document.getElementById('subGreetName').innerText = name;
+    document.getElementById('subGreetIMD').innerText = `IMD: ${imd} | ${cluster}`;
+    document.getElementById('profileAvatar').innerText = getInitials(name);
   }
 
   function logout() {
@@ -272,7 +345,6 @@
         localStorage.setItem('agentManager', agent.manager || 'N/A');
         localStorage.setItem('agentCluster', agent.cluster || 'N/A');
         showToast("Login Successful!");
-        setGreeting();
         autoRoute();
       } else {
         showToast("Invalid Credentials.", "error");
@@ -282,7 +354,6 @@
 
   function loadAgentDashboard() {
     const imd = localStorage.getItem('agentIMD');
-    document.getElementById('subGreetText').innerText = `IMD: ${imd} | ${localStorage.getItem('agentCluster')}`;
     
     const badge = document.getElementById('meetingStatusBadge');
     badge.className = 'status-badge status-inactive';
@@ -409,7 +480,6 @@
       type: document.getElementById('meetingTypeSelect').value
     };
     
-    // Disable buttons temporarily
     document.getElementById('btnOpen').disabled = true;
     document.getElementById('btnClose').disabled = true;
     document.getElementById('btnReOpen').disabled = true;
