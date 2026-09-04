@@ -192,7 +192,7 @@
 
 <script>
   // YOUR NEW LIVE WEB APP LINK
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwo8nHdwCv7FckiX5aze8VyoFP4ZYqXvbieyvO-Jl6ROw6KF0V233dIhSjVIk4Xm_E/exec';
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyCDbGyqPuFKg6feIzDl78Kk5iCd-JeZ-piWAcvGjmYT257MnG-iUPq4IKAR_2paKxk/exec';
 
   let currentMeeting = null;
   let isCheckedInLive = false;
@@ -315,7 +315,7 @@
       badge.innerText = 'Attendance Completed';
       title.style.display = 'block';
       title.innerText = meeting.type;
-      btn.style.display = 'none'; // Hide button to prevent multiple check-ins
+      btn.style.display = 'none'; 
     } else {
       badge.className = 'status-badge status-active';
       badge.innerText = 'Session Active';
