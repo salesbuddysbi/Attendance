@@ -19,28 +19,21 @@
     }
     
     body, html {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
-      margin: 0; padding: 0;
-      color: var(--text-main);
-      display: flex; justify-content: center;
-      min-height: 100vh;
+      font-family: 'Inter', sans-serif; background-color: var(--bg-color);
+      margin: 0; padding: 0; color: var(--text-main);
+      display: flex; justify-content: center; min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
     }
 
     .app-container {
-      width: 100%; max-width: 480px;
-      background: var(--bg-color);
-      position: relative; overflow-x: hidden;
-      padding-bottom: 40px;
+      width: 100%; max-width: 480px; background: var(--bg-color);
+      position: relative; overflow-x: hidden; padding-bottom: 40px;
     }
 
     .navbar {
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      padding: 20px; color: white;
-      display: flex; justify-content: center; align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+      padding: 20px; color: white; display: flex; justify-content: center; align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
     }
     .navbar h1 { margin: 0; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; text-align: center;}
     
@@ -56,15 +49,12 @@
     }
     .input-group input:focus { border-color: var(--secondary); outline: none; }
 
-    .btn {
-      width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
-    }
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; box-shadow: 0 4px 15px rgba(228, 0, 70, 0.2); }
     .btn-danger { background: var(--danger); color: white; }
     .btn-warning { background: var(--warning); color: white; }
-    .btn-success { background: var(--success); color: white; }
     .btn-secondary { background: #e2e8f0; color: var(--text-main); margin-top: 10px; }
     .admin-link { display: block; text-align: center; margin-top: 30px; font-size: 0.8rem; color: var(--text-light); text-decoration: underline; cursor: pointer;}
 
@@ -76,23 +66,25 @@
     .status-inactive { background: #fed7d7; color: #822727; }
     .status-completed { background: #bee3f8; color: #2a4365; }
 
+    /* Dynamic Accordion Styles */
     .stats-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
     .refresh-btn { background: none; border: none; color: var(--secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .stats-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .stat-card { background: var(--card-bg); border-radius: 12px; padding: 16px; border: 1px solid #edf2f7; }
-    .stat-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;}
-    .stat-numbers { font-size: 0.85rem; color: var(--text-light); display: flex; justify-content: space-between; font-weight: 600;}
-    .progress-bar { width: 100%; height: 8px; background: #edf2f7; border-radius: 4px; margin-top: 12px; overflow: hidden; }
+    .stat-card { background: var(--card-bg); border-radius: 12px; padding: 16px; border: 1px solid #edf2f7; transition: 0.2s;}
+    
+    .stat-header-click { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .stat-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;}
+    .stat-numbers { font-size: 0.85rem; color: var(--text-light); display: flex; gap: 15px; font-weight: 600;}
+    .dropdown-arrow { font-size: 0.8rem; color: var(--text-light); transition: transform 0.3s ease; }
+    
+    .progress-bar { width: 100%; height: 6px; background: #edf2f7; border-radius: 4px; margin-top: 12px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 4px; width: 0%; transition: width 1s ease; }
     
-    /* Custom Interactive Toast Notification */
-    #toast {
-      visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
-      text-align: center; border-radius: 8px; padding: 16px; position: fixed;
-      z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%);
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.2); font-weight: 600; font-size: 0.9rem;
-      opacity: 0; transition: opacity 0.3s, bottom 0.3s;
-    }
+    .history-list { margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 10px; display: none; animation: fadeIn 0.3s ease; }
+    .history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f4f6f9; }
+    .history-item:last-child { border-bottom: none; }
+    
+    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); box-shadow: 0px 4px 12px rgba(0,0,0,0.2); font-weight: 600; font-size: 0.9rem; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
     #toast.show { visibility: visible; bottom: 50px; opacity: 1; }
     #toast.success { background-color: var(--success); }
     #toast.error { background-color: var(--danger); }
@@ -100,7 +92,6 @@
 </head>
 <body>
 
-<!-- Custom Notification Popup -->
 <div id="toast">Message here</div>
 
 <div class="app-container">
@@ -108,7 +99,6 @@
     <h1>SBI General Portal</h1>
   </div>
 
-  <!-- Agent Login -->
   <div id="loginScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Agent Access</h2>
@@ -123,11 +113,9 @@
       </div>
       <button class="btn btn-primary" onclick="loginAgent()" id="loginBtn">Log In</button>
     </div>
-    <!-- Hidden Admin Link -->
     <a class="admin-link" onclick="navTo('adminPinScreen')">Admin Area</a>
   </div>
 
-  <!-- Agent Dashboard -->
   <div id="dashboardScreen" class="screen">
     <div class="greeting" id="greetText">Welcome!</div>
     <div class="sub-greeting" id="subGreetText">Loading dashboard...</div>
@@ -142,13 +130,13 @@
       Attendance Record
       <button class="refresh-btn" onclick="loadAgentDashboard()" id="refreshBtn">↻ Refresh</button>
     </div>
-    <div id="statsContainer" class="stats-grid">
-      <!-- Generated by JS -->
-    </div>
+    
+    <!-- Dynamic Accordion Grid Generated Here -->
+    <div id="statsContainer" class="stats-grid"></div>
+    
     <button class="btn btn-secondary" style="margin-top: 20px;" onclick="logout()">Log Out</button>
   </div>
 
-  <!-- Admin PIN -->
   <div id="adminPinScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Admin Authentication</h2>
@@ -161,12 +149,10 @@
     </div>
   </div>
 
-  <!-- Admin Dashboard -->
   <div id="adminDashboardScreen" class="screen">
     <div class="card" style="margin-top: 20px;">
       <h2 style="margin-top:0; color: var(--primary);">Manage Meetings</h2>
       <p style="font-size: 0.8rem; color: var(--text-light);">Meetings auto-close after 15 minutes.</p>
-      
       <div class="input-group">
         <label>Type of Meeting</label>
         <select id="meetingTypeSelect">
@@ -178,20 +164,17 @@
           <option value="Training (Outside Branch)">Training (Outside Branch)</option>
         </select>
       </div>
-      
       <button class="btn btn-primary" onclick="adminAction('Open')" id="btnOpen">Open Meeting</button>
       <div style="display: flex; gap: 10px; margin-top: 10px;">
         <button class="btn btn-danger" onclick="adminAction('Close')" id="btnClose">Close Current</button>
         <button class="btn btn-warning" onclick="adminAction('Re-Open')" id="btnReOpen">Re-Open Last</button>
       </div>
-
       <button class="btn btn-secondary" style="margin-top: 20px;" onclick="autoRoute()">Exit Admin</button>
     </div>
   </div>
 </div>
 
 <script>
-  // YOUR NEW LIVE WEB APP LINK
   const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx4cTh1JwQoir63GrDCTCmEftP1vjBCvH5uouzy2PHObHHVWB2q4yg2e1sw4WsWmBfH/exec';
 
   let currentMeeting = null;
@@ -202,7 +185,6 @@
     autoRoute();
   };
 
-  // --- Utility: Custom Toast Notifications ---
   function showToast(message, type = 'success') {
     const toast = document.getElementById("toast");
     toast.innerText = message;
@@ -210,7 +192,6 @@
     setTimeout(() => { toast.className = toast.className.replace(`show ${type}`, ""); }, 3000);
   }
 
-  // --- API Connection ---
   async function callBackend(action, payload, callback) {
     try {
       const response = await fetch(WEB_APP_URL, {
@@ -226,7 +207,6 @@
     }
   }
 
-  // --- UI Routing ---
   function navTo(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
@@ -253,19 +233,16 @@
     autoRoute();
   }
 
-  // --- Agent Logic ---
   function loginAgent() {
     const imd = document.getElementById('loginIMD').value.trim();
     const name = document.getElementById('loginName').value.trim();
     if(!imd || !name) return showToast("Enter IMD Code and Name.", "error");
 
     const btn = document.getElementById('loginBtn');
-    btn.innerText = 'Validating...';
-    btn.disabled = true;
+    btn.innerText = 'Validating...'; btn.disabled = true;
     
     callBackend('validateAgent', {imd, name}, function(agent) {
-      btn.innerText = 'Log In';
-      btn.disabled = false;
+      btn.innerText = 'Log In'; btn.disabled = false;
       if(agent) {
         localStorage.setItem('agentIMD', agent.imd);
         localStorage.setItem('agentName', agent.name);
@@ -274,9 +251,7 @@
         showToast("Login Successful!");
         setGreeting();
         autoRoute();
-      } else {
-        showToast("Invalid Credentials.", "error");
-      }
+      } else { showToast("Invalid Credentials.", "error"); }
     });
   }
 
@@ -306,52 +281,84 @@
     const btn = document.getElementById('actionBtn');
 
     if(!meeting && !isCheckedInLive) {
-      badge.className = 'status-badge status-inactive';
-      badge.innerText = 'No Active Meetings';
-      title.style.display = 'none';
-      btn.style.display = 'none';
+      badge.className = 'status-badge status-inactive'; badge.innerText = 'No Active Meetings';
+      title.style.display = 'none'; btn.style.display = 'none';
     } else if (alreadyCompleted && !isCheckedInLive) {
-      badge.className = 'status-badge status-completed';
-      badge.innerText = 'Attendance Completed';
-      title.style.display = 'block';
-      title.innerText = meeting.type;
+      badge.className = 'status-badge status-completed'; badge.innerText = 'Attendance Completed';
+      title.style.display = 'block'; title.innerText = meeting.type;
       btn.style.display = 'none'; 
     } else {
-      badge.className = 'status-badge status-active';
-      badge.innerText = 'Session Active';
-      title.style.display = 'block';
-      title.innerText = meeting ? meeting.type : "Pending Checkout";
+      badge.className = 'status-badge status-active'; badge.innerText = 'Session Active';
+      title.style.display = 'block'; title.innerText = meeting ? meeting.type : "Pending Checkout";
       btn.style.display = 'block';
 
-      if(isCheckedInLive) {
-        btn.innerText = 'Check Out';
-        btn.className = 'btn btn-danger';
-      } else {
-        btn.innerText = 'Mark Attendance';
-        btn.className = 'btn btn-primary';
-      }
+      if(isCheckedInLive) { btn.innerText = 'Check Out'; btn.className = 'btn btn-danger'; } 
+      else { btn.innerText = 'Mark Attendance'; btn.className = 'btn btn-primary'; }
+    }
+  }
+
+  // --- Drill Down UI Logic ---
+  function toggleDetails(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById('arrow-' + id);
+    if(el.style.display === 'block') {
+      el.style.display = 'none';
+      arrow.style.transform = 'rotate(0deg)';
+    } else {
+      el.style.display = 'block';
+      arrow.style.transform = 'rotate(180deg)';
     }
   }
 
   function renderStats(stats) {
     const container = document.getElementById('statsContainer');
     container.innerHTML = ''; 
+    let index = 0;
 
-    // Always show all categories, defaulting to 0
     for(const [type, data] of Object.entries(stats)) {
       const percent = data.scheduled > 0 ? Math.round((data.attended / data.scheduled) * 100) : 0;
+      const detailsId = 'details-' + index;
       
+      // Build the dynamic history list
+      let historyHTML = `<div class="history-list" id="${detailsId}">`;
+      if (data.history.length === 0) {
+        historyHTML += `<div class="history-item" style="justify-content:center; color:var(--text-light); font-size:0.85rem;">No sessions scheduled yet</div>`;
+      } else {
+        data.history.forEach(item => {
+          const dObj = new Date(item.date);
+          const dateStr = isNaN(dObj) ? item.date : dObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+          const statusColor = item.status === 'Present' ? 'var(--success)' : 'var(--danger)';
+          historyHTML += `
+            <div class="history-item">
+                <div>
+                    <div style="font-weight:600; font-size:0.85rem;">${dateStr}</div>
+                    <div style="font-size:0.75rem; color:var(--text-light)">Duration: ${item.duration}</div>
+                </div>
+                <div style="font-weight:700; font-size:0.85rem; color:${statusColor}">${item.status}</div>
+            </div>`;
+        });
+      }
+      historyHTML += `</div>`;
+
+      // Build the main card
       const card = document.createElement('div');
       card.className = 'stat-card';
       card.innerHTML = `
-        <div class="stat-title">${type}</div>
-        <div class="stat-numbers">
-          <span>Attended: <strong style="color:var(--primary)">${data.attended} / ${data.scheduled}</strong></span>
-          <span style="color:var(--secondary)"><strong>${percent}%</strong></span>
+        <div class="stat-header-click" onclick="toggleDetails('${detailsId}')">
+            <div>
+                <div class="stat-title">${type}</div>
+                <div class="stat-numbers">
+                  <span>Attended: <strong style="color:var(--primary)">${data.attended} / ${data.scheduled}</strong></span>
+                  <span style="color:var(--secondary)"><strong>${percent}%</strong></span>
+                </div>
+            </div>
+            <div id="arrow-${detailsId}" class="dropdown-arrow">▼</div>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div>
+        ${historyHTML}
       `;
       container.appendChild(card);
+      index++;
     }
   }
 
@@ -363,12 +370,8 @@
       btn.innerText = 'Processing...';
       callBackend('markCheckOut', {imd: localStorage.getItem('agentIMD')}, function(res) {
         btn.disabled = false;
-        if(res.status === 'success') {
-          showToast("Checked Out Successfully!");
-          loadAgentDashboard(); 
-        } else {
-          showToast(res.message, "error");
-        }
+        if(res.status === 'success') { showToast("Checked Out Successfully!"); loadAgentDashboard(); } 
+        else { showToast(res.message, "error"); }
       });
     } else {
       btn.innerText = 'Processing...';
@@ -377,53 +380,29 @@
         imd: localStorage.getItem('agentIMD'), name: localStorage.getItem('agentName'), 
         manager: localStorage.getItem('agentManager'), cluster: localStorage.getItem('agentCluster')
       };
-
       callBackend('markCheckIn', payload, function(res) {
-        btn.disabled = false;
-        showToast("Check-In Successful!");
-        loadAgentDashboard();
+        btn.disabled = false; showToast("Check-In Successful!"); loadAgentDashboard();
       });
     }
   }
 
-  // --- Admin Logic ---
   function verifyAdminPin() {
     const pin = document.getElementById('adminPinInput').value;
     const btn = document.getElementById('pinBtn');
     btn.innerText = 'Validating...';
-    
     callBackend('verifyAdmin', {pin}, function(isValid) {
       btn.innerText = 'Validate';
-      if(isValid) {
-        document.getElementById('adminPinInput').value = '';
-        navTo('adminDashboardScreen');
-      } else {
-        showToast("Invalid PIN.", "error");
-      }
+      if(isValid) { document.getElementById('adminPinInput').value = ''; navTo('adminDashboardScreen'); } 
+      else { showToast("Invalid PIN.", "error"); }
     });
   }
 
   function adminAction(actionType) {
-    const payload = {
-      actionType: actionType,
-      type: document.getElementById('meetingTypeSelect').value
-    };
-    
-    // Disable buttons temporarily
-    document.getElementById('btnOpen').disabled = true;
-    document.getElementById('btnClose').disabled = true;
-    document.getElementById('btnReOpen').disabled = true;
-
+    const payload = { actionType: actionType, type: document.getElementById('meetingTypeSelect').value };
+    document.getElementById('btnOpen').disabled = true; document.getElementById('btnClose').disabled = true; document.getElementById('btnReOpen').disabled = true;
     callBackend('adminMeetingAction', payload, function(res) {
-      document.getElementById('btnOpen').disabled = false;
-      document.getElementById('btnClose').disabled = false;
-      document.getElementById('btnReOpen').disabled = false;
-      
-      if(res.success) {
-        showToast(res.message);
-      } else {
-        showToast(res.message, "error");
-      }
+      document.getElementById('btnOpen').disabled = false; document.getElementById('btnClose').disabled = false; document.getElementById('btnReOpen').disabled = false;
+      if(res.success) { showToast(res.message); } else { showToast(res.message, "error"); }
     });
   }
 </script>
